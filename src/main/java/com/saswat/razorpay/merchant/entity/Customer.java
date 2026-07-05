@@ -1,12 +1,18 @@
 package com.saswat.razorpay.merchant.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "customer")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Customer {
 
     @Id
@@ -15,6 +21,9 @@ public class Customer {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
+
+    @Column(length = 200)
     private String name;
 
     @Column(length = 200)

@@ -3,18 +3,17 @@ package com.saswat.razorpay.merchant.entity;
 import com.saswat.razorpay.common.enums.BusinessType;
 import com.saswat.razorpay.common.enums.MerchantStatus;
 import jakarta.persistence.*;
-import lombok.Builder;
-import org.hibernate.annotations.Changelog;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "merchant")
-//@Getter
-//@Setter
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Merchant {
 
     @Id
@@ -41,7 +40,7 @@ public class Merchant {
     private String websiteUrl;
 
     @Column(length = 200, nullable = false)
-    private MerchantStatus merchantStatus;
+    private MerchantStatus status;
 
     @Column(length = 20)
     private String gstId;
