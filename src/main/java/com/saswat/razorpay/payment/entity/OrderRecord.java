@@ -3,6 +3,7 @@ package com.saswat.razorpay.payment.entity;
 import com.saswat.razorpay.common.enums.OrderStatus;
 import com.saswat.razorpay.common.money.Money;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,6 +13,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "order_record")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class OrderRecord {
 
     @Id
@@ -25,11 +31,16 @@ public class OrderRecord {
     @Embedded
     private Money amount;
 
+    @Column(length = 100)
+    private String receipt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private OrderStatus status;
+    private OrderStatus orderStatus =  OrderStatus.CREATED;
 
-    private Integer attempts;
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer attempts = 0;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
