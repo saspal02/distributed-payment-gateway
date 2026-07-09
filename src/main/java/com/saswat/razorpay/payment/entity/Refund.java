@@ -1,11 +1,11 @@
 package com.saswat.razorpay.payment.entity;
 
+import com.saswat.razorpay.common.entity.BaseEntity;
 import com.saswat.razorpay.common.enums.RefundStatus;
-import com.saswat.razorpay.common.money.Money;
+import com.saswat.razorpay.common.entity.Money;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.hibernate.type.descriptor.jdbc.SqlTypedJdbcType;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "refund")
-public class Refund {
+public class Refund extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

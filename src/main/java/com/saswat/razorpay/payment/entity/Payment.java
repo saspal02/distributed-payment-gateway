@@ -1,8 +1,9 @@
 package com.saswat.razorpay.payment.entity;
 
+import com.saswat.razorpay.common.entity.BaseEntity;
 import com.saswat.razorpay.common.enums.PaymentMethod;
 import com.saswat.razorpay.common.enums.PaymentStatus;
-import com.saswat.razorpay.common.money.Money;
+import com.saswat.razorpay.common.entity.Money;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -13,13 +14,16 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "payment", indexes = {
+        @Index(name = "idx_payment_order_id", columnList = "order_id"),
+        @Index(name = "idx_payment_merchant_id", columnList = "merchant_id")
+})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Payment {
+public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

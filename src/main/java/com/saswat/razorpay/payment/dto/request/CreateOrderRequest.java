@@ -1,6 +1,6 @@
 package com.saswat.razorpay.payment.dto.request;
 
-import com.saswat.razorpay.common.money.Money;
+import com.saswat.razorpay.common.entity.Money;
 
 import java.time.LocalDateTime;
 import java.util.Map;

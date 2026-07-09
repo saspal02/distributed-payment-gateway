@@ -7,6 +7,7 @@ import com.saswat.razorpay.merchant.dto.request.MerchantSignUpRequest;
 import com.saswat.razorpay.merchant.dto.response.MerchantResponse;
 import com.saswat.razorpay.merchant.entity.AppUser;
 import com.saswat.razorpay.merchant.entity.Merchant;
+import com.saswat.razorpay.merchant.mapper.MerchantMapper;
 import com.saswat.razorpay.merchant.repository.AppUserRepository;
 import com.saswat.razorpay.merchant.repository.MerchantRepository;
 import com.saswat.razorpay.merchant.service.AuthService;
@@ -15,15 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository appUserRepository;
-
     private final MerchantRepository merchantRepository;
+    private final MerchantMapper merchantMapper;
 
     @Override
     @Transactional
@@ -33,13 +33,8 @@ public class AuthServiceImpl implements AuthService {
                     "Merchant with email already exists: " + request.email());
         }
 
-        Merchant merchant = Merchant.builder()
-                .businessName(request.name())
-                .businessType(request.businessType())
-                .name(request.name())
-                .email(request.email())
-                .status(MerchantStatus.PENDING_KYC)
-                .build();
+        Merchant merchant = merchantMapper.toEntityFromSignUpRequest(request);
+        merchant.setStatus(MerchantStatus.PENDING_KYC);
          merchantRepository.save(merchant);
          
         AppUser appUser = AppUser.builder()
@@ -50,8 +45,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         appUserRepository.save(appUser);
 
-        return new MerchantResponse(merchant.getId(), merchant.getName(),
-                merchant.getEmail(), merchant.getBusinessName(),
-                merchant.getBusinessType(), merchant.getStatus());
+        return merchantMapper.toResponse(merchant);
+
     }
 }

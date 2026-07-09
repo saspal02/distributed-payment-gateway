@@ -1,4 +1,4 @@
-package com.saswat.razorpay.common.money;
+package com.saswat.razorpay.common.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
