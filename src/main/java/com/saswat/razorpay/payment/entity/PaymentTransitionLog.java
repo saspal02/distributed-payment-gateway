@@ -1,9 +1,12 @@
 package com.saswat.razorpay.payment.entity;
 
 import com.saswat.razorpay.common.entity.BaseEntity;
+import com.saswat.razorpay.common.enums.PaymentActor;
 import com.saswat.razorpay.common.enums.PaymentEvent;
 import com.saswat.razorpay.common.enums.PaymentStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,6 +15,11 @@ import java.util.UUID;
 @Table(name = "payment_transition_log", indexes = {
         @Index(name = "idx_payment_transition_log_payment_id", columnList = "payment_id")
 })
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class PaymentTransitionLog extends BaseEntity {
 
     @Id
@@ -34,8 +42,9 @@ public class PaymentTransitionLog extends BaseEntity {
     @Column(name = "to_status", nullable = false, length = 30)
     private PaymentStatus toStatus;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "actor", length = 100)
-    private String actor;
+    private PaymentActor actor;
 
     @Column(name = "occurred_at", nullable = false)
     private LocalDateTime occurredAt;
