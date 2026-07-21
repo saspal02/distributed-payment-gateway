@@ -14,3 +14,24 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  vault:
+    master-key: dfjhdhdkdkdfjkdjffkdjfkjdkdjfkdkdjkd
+
+  payment:
+    simulator:
+      poll-intercal-ms: 5000
+      chaos-mode: NORMAL
+      method:
+        CARD:
+          min-delay-seconds: 2
+          max-delay-second: 6
+          success-rate: 90
+        UPI:
+            min-delay-seconds: 1
+            max-delay-second: 3
+            success-rate: 95
+        NET-BANKING:
+          min-delay-seconds: 4
+          max-delay-second: 10
+          success-rate: 80
