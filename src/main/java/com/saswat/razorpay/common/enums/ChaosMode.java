@@ -4,5 +4,6 @@ public enum ChaosMode {
     NORMAL,
     SLOW,
     FAILURE,
-    SUCCESS
+    SUCCESS,
+    TIMEOUT
 }

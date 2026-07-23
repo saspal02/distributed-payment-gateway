@@ -47,7 +47,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .environment(request.environment())
                 .build();
 
-        apiKeyRepository.save(apiKey);
+        apiKey = apiKeyRepository.save(apiKey);
 
         return new ApiKeyCreateResponse(apiKey.getId(), keyId, rawSecret, request.environment());
 

@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setOrderStatus(OrderStatus.CANCELLED);
-        orderRepository.save(order);
+        order = orderRepository.save(order);
 
         return orderMapper.toResponse(order);
     }

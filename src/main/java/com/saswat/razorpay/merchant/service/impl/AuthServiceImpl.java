@@ -35,7 +35,8 @@ public class AuthServiceImpl implements AuthService {
 
         Merchant merchant = merchantMapper.toEntityFromSignUpRequest(request);
         merchant.setStatus(MerchantStatus.PENDING_KYC);
-         merchantRepository.save(merchant);
+
+        merchant =  merchantRepository.save(merchant);
          
         AppUser appUser = AppUser.builder()
                 .email(request.email())
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
                 .passwordHash(request.password()) // TODO: encrypt using Bcrypt
                 .role(UserRole.OWNER)
                 .build();
-        appUserRepository.save(appUser);
+        appUser = appUserRepository.save(appUser);
 
         return merchantMapper.toResponse(merchant);
 

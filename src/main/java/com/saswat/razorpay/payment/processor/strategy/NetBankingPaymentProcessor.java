@@ -13,7 +13,7 @@ public class NetBankingPaymentProcessor implements PaymentProcessor {
         final String BANK_CODE_FAIL = "BANK_CODE_FAIL";
 
         String bankCode = request.methodDetails() != null ?
-                request.methodDetails().get("BANK").toString()  : null;
+                request.methodDetails().get("bank").toString()  : null;
 
         if (BANK_CODE_FAIL.equals(bankCode)) {
             return new PaymentProcessorResponse.Failure("BANK_REJECTED",

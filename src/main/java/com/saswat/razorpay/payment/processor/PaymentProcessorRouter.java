@@ -3,14 +3,16 @@ package com.saswat.razorpay.payment.processor;
 import com.saswat.razorpay.common.enums.PaymentMethod;
 import com.saswat.razorpay.payment.processor.dto.PaymentProcessorRequest;
 import com.saswat.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentProcessorRouter {
 
-    private Map<PaymentMethod, PaymentProcessor> paymentProcessors;
+    private final Map<PaymentMethod, PaymentProcessor> paymentProcessors;
 
     public PaymentProcessorResponse charge(PaymentProcessorRequest request) {
         PaymentProcessor processor = paymentProcessors.get(request.method());

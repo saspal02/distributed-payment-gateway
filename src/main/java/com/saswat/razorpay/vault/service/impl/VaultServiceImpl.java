@@ -61,16 +61,19 @@ public class VaultServiceImpl implements VaultService {
                 .cardHolderName(request.cardHolderName())
                 .build();
 
-        vaultCardRepository.save(vaultCard);
+        vaultCard = vaultCardRepository.save(vaultCard);
 
         String token = "tok_"+ RandomizerUtil.randomBase64(32);
 
-        cardTokenRepository.save(CardToken.builder()
-                        .vaultCard(vaultCard)
-                        .token(token)
-                        .customer(request.customerId())
-                        .merchant(merchantId)
-                .build());
+        CardToken cardToken = CardToken.builder()
+                .vaultCard(vaultCard)
+                .token(token)
+                .customer(request.customerId())
+                .merchant(merchantId)
+                .build();
+
+        cardToken = cardTokenRepository.save(cardToken);
+
         return new TokenizeResponse(token, lastFour, cardBrand,
                 request.expiryMonth(), request.expiryYear());
     }
