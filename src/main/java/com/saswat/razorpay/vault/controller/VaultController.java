@@ -1,5 +1,6 @@
 package com.saswat.razorpay.vault.controller;
 
+import com.saswat.razorpay.merchant.security.MerchantContext;
 import com.saswat.razorpay.vault.dto.request.TokenizeRequest;
 import com.saswat.razorpay.vault.dto.response.TokenizeResponse;
 import com.saswat.razorpay.vault.service.VaultService;
@@ -20,10 +21,11 @@ import java.util.UUID;
 public class VaultController {
 
     private final VaultService vaultService;
+    private final MerchantContext merchantContext;
 
     @PostMapping("/tokenize")
-    public ResponseEntity<TokenizeResponse> tokenize(@RequestBody TokenizeRequest request, UUID merchantId) {
+    public ResponseEntity<TokenizeResponse> tokenize(@RequestBody TokenizeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(vaultService.tokenize(request,merchantId));
+                .body(vaultService.tokenize(request, merchantContext.getMerchantId()));
     }
 }

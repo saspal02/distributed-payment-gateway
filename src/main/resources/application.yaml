@@ -36,4 +36,4 @@ vault:
           max-delay-second: 10
           success-rate: 80
 jwt:
-  secret-key: dfkjakdsfjllllkfjslkjfkldjfklsjkljfsklfjkld
+  secret-key: 87prVo3l0gwh2KHj5xjNi5flMOJmfutS7FtDf+e/DzM=

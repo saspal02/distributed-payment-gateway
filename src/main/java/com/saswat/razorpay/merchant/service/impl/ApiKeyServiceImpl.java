@@ -11,10 +11,11 @@ import com.saswat.razorpay.merchant.mapper.ApiKeyMapper;
 import com.saswat.razorpay.merchant.repository.ApiKeyRepository;
 import com.saswat.razorpay.merchant.repository.MerchantRepository;
 import com.saswat.razorpay.merchant.service.ApiKeyService;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final MerchantRepository merchantRepository;
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyMapper apiKeyMapper;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -37,13 +39,13 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         Merchant merchant = merchantRepository.findById(merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("merchant", merchantId));
 
-        String keyId = "rzp_" + request.environment().name().toUpperCase() + RandomizerUtil.randomBase64(24);
+        String keyId = "rzp_" + request.environment().name().toLowerCase() + RandomizerUtil.randomBase64(24);
         String rawSecret = RandomizerUtil.randomBase64(40);
 
         ApiKey apiKey = ApiKey.builder()
                 .merchant(merchant)
                 .keyId(keyId)
-                .keySecretHash(rawSecret) // TODO: encode with BcryptPasswordEncoder
+                .keySecretHash(passwordEncoder.encode(rawSecret))
                 .environment(request.environment())
                 .build();
 
@@ -74,7 +76,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .orElseThrow(() -> new ResourceNotFoundException("ApiKey", keyId));
         String newRawSecret = RandomizerUtil.randomBase64(40);
         apikey.setPreviousKeySecretHash(apikey.getKeySecretHash());
-        apikey.setKeySecretHash(newRawSecret); // TODO: encode with bcryptpasswordEncoder
+        apikey.setKeySecretHash(passwordEncoder.encode(newRawSecret));
         apikey.setRotatedAt(LocalDateTime.now());
         apikey.setGracePeriodExpiresAt(LocalDateTime.now().plusSeconds(24));
         apiKeyRepository.save(apikey);

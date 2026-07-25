@@ -4,7 +4,9 @@ import com.saswat.razorpay.common.util.RandomizerUtil;
 import com.saswat.razorpay.payment.processor.PaymentProcessor;
 import com.saswat.razorpay.payment.processor.dto.PaymentProcessorRequest;
 import com.saswat.razorpay.payment.processor.dto.PaymentProcessorResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NetBankingPaymentProcessor implements PaymentProcessor {
 
     @Override

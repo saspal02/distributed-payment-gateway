@@ -3,7 +3,7 @@ package com.saswat.razorpay.merchant.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record MerchantLoginRequest(
+public record LoginRequest(
 
         @NotBlank @Email
         String email,

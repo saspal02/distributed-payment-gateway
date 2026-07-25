@@ -1,8 +1,10 @@
 package com.saswat.razorpay.payment.controller;
 
+import com.saswat.razorpay.merchant.security.MerchantContext;
 import com.saswat.razorpay.payment.dto.request.CreateOrderRequest;
 import com.saswat.razorpay.payment.dto.response.OrderResponse;
 import com.saswat.razorpay.payment.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +20,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderController {
 
+    private final MerchantContext merchantContext;
+
     private final OrderService orderService;
-    UUID merchantId = UUID.fromString("546c96cd-b195-46a3-9083-4ba1e3741048"); //TODO: replace it with merchant
 
     @PostMapping
-    public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request) {
+    public ResponseEntity<OrderResponse> create(@RequestBody @Valid CreateOrderRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderService.create(merchantId, request));
+                .body(orderService.create(merchantContext.getMerchantId(), request));
 
 
     }

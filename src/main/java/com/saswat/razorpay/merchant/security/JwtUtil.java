@@ -28,16 +28,27 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(60*100)))
+                .expiration(Date.from(now.plusSeconds(60*100)))
+                .claim("merchant_id", merchantId)
                 .claim("role", role)
                 .signWith(getSecretKey())
-                .compact()
+                .compact();
     }
 
     public Claims verifyAccessToken(String accessToken) {
         return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
+                .parseSignedClaims(accessToken)
+                .getPayload();
+    }
+
+    public String extractRole(Claims claims) {
+        return claims.get("role", String.class);
+    }
+
+    public String extractMerchantId(Claims claims) {
+        return claims.get("merchant_id", String.class);
     }
 
 }
