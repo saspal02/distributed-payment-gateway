@@ -2,6 +2,7 @@ package com.saswat.razorpay.merchant.service.impl;
 
 import com.saswat.razorpay.common.exception.ResourceNotFoundException;
 import com.saswat.razorpay.common.util.RandomizerUtil;
+import com.saswat.razorpay.merchant.cache.ApiKeyCache;
 import com.saswat.razorpay.merchant.dto.request.CreateApiKeyRequest;
 import com.saswat.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.saswat.razorpay.merchant.dto.response.ApiKeyResponse;
@@ -31,6 +32,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyMapper apiKeyMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ApiKeyCache apiKeyCache;
 
 
     @Override
@@ -66,7 +68,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         ApiKey apikey = apiKeyRepository.findByIdAndMerchant_Id(keyId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("ApiKey", keyId));
 
-        if (!apikey.isEnabled()) throw new RuntimeException("Cannot rotate a disabled key");
+        apikey.setEnabled(false);
+        apiKeyCache.evict(apikey.getKeyId());
     }
 
     @Override
@@ -80,6 +83,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apikey.setRotatedAt(LocalDateTime.now());
         apikey.setGracePeriodExpiresAt(LocalDateTime.now().plusSeconds(24));
         apiKeyRepository.save(apikey);
+
+        apiKeyCache.evict(apikey.getKeyId());
 
         return new ApiKeyCreateResponse(apikey.getId(), apikey.getKeyId(), newRawSecret, apikey.getEnvironment());
 

@@ -7,6 +7,12 @@ spring:
     password: ${PSQL_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -16,7 +22,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 vault:
-  master-key: NqcfbJG1zkOfBsNF/wPmlLA7aaOvh9RCHTYYgY/9A2Q=
+  master-key: ${MASTER_KEY}
 
   payment:
     simulator:
@@ -36,4 +42,11 @@ vault:
           max-delay-second: 10
           success-rate: 80
 jwt:
-  secret-key: 87prVo3l0gwh2KHj5xjNi5flMOJmfutS7FtDf+e/DzM=
+  secret-key: ${JWT_SECRET}
+
+app:
+  rate-limit:
+    method: fixed
+    use-case:
+      api-key:
+        requests-per-minute: 2

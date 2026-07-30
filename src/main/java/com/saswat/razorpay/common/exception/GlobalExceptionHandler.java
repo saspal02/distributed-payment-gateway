@@ -2,6 +2,7 @@ package com.saswat.razorpay.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestControllerAdvice
@@ -40,5 +42,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ErrorResponse.of("VALIDATION_FAILED", "Request validation failed", fieldErrors));
+    }
+
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimitException(RateLimitException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("X-RateLimit-Remaining", "0")
+                .header("Retry-After", String.valueOf(ex.getRetryAfterSeconds()))
+                .header("X-RateLimit-Reset", String.valueOf(
+                        Instant.now().plusSeconds(ex.getRetryAfterSeconds()).getEpochSecond()
+                ))
+                .body(ErrorResponse.of("RATE_LIMIT_EXCEEDED", ex.getMessage()));
     }
 }
