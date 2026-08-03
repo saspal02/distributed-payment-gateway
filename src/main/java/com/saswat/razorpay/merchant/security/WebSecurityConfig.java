@@ -1,5 +1,6 @@
 package com.saswat.razorpay.merchant.security;
 
+import com.saswat.razorpay.common.idempotency.IdempotencyFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,6 +23,7 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+    private final IdempotencyFilter idempotencyFilter;
 
     @Bean
     @Order(1)
@@ -37,6 +38,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(idempotencyFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
@@ -51,6 +53,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(idempotencyFilter, ApiKeyAuthenticationFilter.class)
                 .build();
     }
 

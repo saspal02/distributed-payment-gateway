@@ -4,6 +4,7 @@ import com.saswat.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.saswat.razorpay.merchant.dto.response.ApiKeyResponse;
 import com.saswat.razorpay.merchant.entity.ApiKey;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface ApiKeyMapper {
     ApiKeyCreateResponse toCreateResponse(ApiKey apiKey);
 
     List<ApiKeyResponse> toResponseList(List<ApiKey> apiKeyList);
+
 }

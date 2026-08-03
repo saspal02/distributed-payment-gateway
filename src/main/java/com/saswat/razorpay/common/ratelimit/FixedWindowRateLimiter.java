@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = app.rate-limit.method, havingValue = "fixed")
+@ConditionalOnProperty(name = "app.rate-limit.method", havingValue = "fixed")
 public class FixedWindowRateLimiter {
 
     private final StringRedisTemplate redis;
@@ -21,11 +21,7 @@ public class FixedWindowRateLimiter {
 
         Long count = redis.opsForValue().increment(redisKey);
 
-        if (count == null) return RateLimitResult.allowed(maxRequestAllowed);m  //redis unavailable
-
-        if (count == 1) {
-            redis.expire(redisKey, Duration.ofSeconds(windowSeconds));
-        }
+        if (count == null) return RateLimitResult.allowed(maxRequestAllowed);  //redis unavailable
 
         if (count == 1) {
             redis.expire(redisKey, Duration.ofSeconds(windowSeconds));
