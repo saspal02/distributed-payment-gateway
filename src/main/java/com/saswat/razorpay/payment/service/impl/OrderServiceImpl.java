@@ -4,6 +4,7 @@ import com.saswat.razorpay.common.enums.OrderStatus;
 import com.saswat.razorpay.common.exception.BusinessRuleViolationException;
 import com.saswat.razorpay.common.exception.DuplicateResourceException;
 import com.saswat.razorpay.common.exception.ResourceNotFoundException;
+import com.saswat.razorpay.merchant.service.CustomerService;
 import com.saswat.razorpay.payment.dto.request.CreateOrderRequest;
 import com.saswat.razorpay.payment.dto.response.OrderResponse;
 import com.saswat.razorpay.payment.dto.response.PaymentResponse;
@@ -18,11 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,22 +34,35 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderMapper orderMapper;
+    private final CustomerService customerService;
 
     @Value("${payment.order.Default-order-expiry-minutes:30}")
     private int defaultOrderExpiryMinutes;
 
     @Override
+    @Transactional
     public OrderResponse create(UUID merchantId, CreateOrderRequest request) {
         if(request.receipt() != null && orderRepository.existsByMerchantIdAndReceipt(merchantId,request.receipt())) {
             throw new DuplicateResourceException("ORDER_RECEIPT_DUPLICATE", "Order with receipt already exists: "
-                    + request);
+                    + request.receipt());
         }
+
+        UUID customerId = null;
+        if (request.customer() != null) {
+            customerId = customerService.findOrCreate(merchantId,
+                    request.customer().email(),
+                    request.customer().name(),
+                    request.customer().phone()
+            );
+        }
+
 
         OrderRecord order = OrderRecord.builder()
                 .receipt(request.receipt())
                 .amount(request.amount())
                 .notes(request.notes())
                 .merchantId(merchantId)
+                .customerId(customerId)
                 .orderStatus(OrderStatus.CREATED)
                 .expiresAt(request.expiresAt() != null ? request.expiresAt() :
                         LocalDateTime.now().plusMinutes(defaultOrderExpiryMinutes))
