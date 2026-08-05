@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.rate-limit.method", havingValue = "fixed")
-public class FixedWindowRateLimiter {
+public class FixedWindowRateLimiter implements RateLimiter {
 
     private final StringRedisTemplate redis;
 

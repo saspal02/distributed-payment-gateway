@@ -78,8 +78,8 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
                 throw new RateLimitException("Too many requests", rateLimitResult.retryAfterSeconds());
             }
 
-            response.setHeader("X-RateLimit-Limit", String.valueOf(requestsPerMinute));
-            response.setHeader("X-RateLimit-Remaining", String.valueOf(requestsPerMinute));
+            response.setHeader("RateLimit-Limit", String.valueOf(requestsPerMinute));
+            response.setHeader("RateLimit-Remaining", String.valueOf(requestsPerMinute));
 
             var auth = new UsernamePasswordAuthenticationToken(keyId, null,
                     List.of(new SimpleGrantedAuthority("API_KEY_ROLE"))

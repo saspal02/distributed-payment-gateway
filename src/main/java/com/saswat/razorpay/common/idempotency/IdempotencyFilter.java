@@ -44,7 +44,7 @@ public class IdempotencyFilter extends OncePerRequestFilter {
             return;
         }
 
-        String rawKey = request.getHeader("X-Idempotency-Key");
+        String rawKey = request.getHeader("Idempotency-Key");
         if (rawKey == null || rawKey.isBlank()) { // No idem-key found, continue
             filterChain.doFilter(request, response);
             return;
