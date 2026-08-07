@@ -47,12 +47,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RateLimitException.class)
     public ResponseEntity<ErrorResponse> handleRateLimitException(RateLimitException ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .header("X-RateLimit-Remaining", "0")
+                .header("RateLimit-Remaining", "0")
                 .header("Retry-After", String.valueOf(ex.getRetryAfterSeconds()))
-                .header("X-RateLimit-Reset", String.valueOf(
+                .header("RateLimit-Reset", String.valueOf(
                         Instant.now().plusSeconds(ex.getRetryAfterSeconds()).getEpochSecond()
                 ))
                 .body(ErrorResponse.of("RATE_LIMIT_EXCEEDED", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IdempotencyConflictException.class)
+    public ResponseEntity<ErrorResponse> handleIdempotencyConflict(IdempotencyConflictException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(ex.getMessage(), ex.getMessage()));
+
     }
 
 

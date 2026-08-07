@@ -1,7 +1,15 @@
 package com.saswat.razorpay.common.exception;
 
+import lombok.Getter;
+
+@Getter
 public class IdempotencyConflictException extends RuntimeException {
-    public IdempotencyConflictException(String message) {
+
+    private final String errorCode;
+
+    public IdempotencyConflictException(String message, String errorCode) {
         super(message);
+        this.errorCode = errorCode;
+
     }
 }

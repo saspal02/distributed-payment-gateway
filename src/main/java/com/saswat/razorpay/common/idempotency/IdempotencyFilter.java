@@ -57,7 +57,7 @@ public class IdempotencyFilter extends OncePerRequestFilter {
         boolean claimed = idempotencyStore.setIfAbsent(key, IN_PROGRESS_TTL);
 
         if (!claimed) {
-            // another thread has already claimed thsi key
+            // another thread has already claimed this key
             Optional<String> existing = idempotencyStore.get(key);
 
             if (existing.isPresent() && !IdempotencyStore.IN_PROGRESS.equals(existing.get())) {
@@ -65,7 +65,8 @@ public class IdempotencyFilter extends OncePerRequestFilter {
                 replay(request, response, existing.get());
             } else {
                 // it's in progress by another thread
-                var ex = new IdempotencyConflictException("A request with this idempotency key is in progress");
+                var ex = new IdempotencyConflictException("IDEMPOTENCY_REQUEST_IN_PROGRESS",
+                        "A request with this idempotency key is in progress");
                 handlerExceptionResolver.resolveException(request, response, null, ex);
             }
             return;
@@ -101,7 +102,8 @@ public class IdempotencyFilter extends OncePerRequestFilter {
     private void replay(HttpServletRequest request, HttpServletResponse response, String stored) throws IOException {
         int separatorIndex = stored.indexOf(SEPARATOR);
         if (separatorIndex < 0) {
-            var ex = new IdempotencyConflictException("A request with idempotency key is in progress");
+            var ex = new IdempotencyConflictException("IDEMPOTENCY_REQUEST_IN_PROGRESS",
+                    "A request with idempotency key is in progress");
             handlerExceptionResolver.resolveException(request, response, null, ex);
         }
 
