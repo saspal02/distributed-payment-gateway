@@ -102,7 +102,8 @@ public class WebhookConfigServiceImpl implements WebhookConfigService, MerchantW
         return merchantWebhookConfigRepository.findByMerchant_IdAndEnabledTrue(merchantId).stream()
                 .filter(config -> config.isSubscribedTo(eventType))
                 .map(config -> {
-                    byte[] decryptedSecretBytes = bytesEncryptor.decrypt(config.getWebhookSecret().getBytes(StandardCharsets.UTF_8));
+                    byte[] cipherBytes = Base64.getDecoder().decode(config.getWebhookSecret());
+                    byte[] decryptedSecretBytes = bytesEncryptor.decrypt(cipherBytes);
                     return new WebhookTarget(config.getId(), config.getTargetUrl(),
                             new String(decryptedSecretBytes, StandardCharsets.UTF_8));
                 })

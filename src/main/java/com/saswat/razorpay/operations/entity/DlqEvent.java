@@ -2,6 +2,7 @@ package com.saswat.razorpay.operations.entity;
 
 import com.saswat.razorpay.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,6 +13,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "dlq_event")
+@Getter
+@Setter
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DlqEvent extends BaseEntity {
 
     @Id
@@ -22,7 +28,7 @@ public class DlqEvent extends BaseEntity {
     private UUID merchantId;
 
     @OneToOne(fetch =  FetchType.LAZY)
-    private WebHookEvent webhookEvent;
+    private WebhookEvent webhookEvent;
 
     @Column(length = 1000)
     private String finalError;
