@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
                 .passwordHash(passwordEncoder.encode(request.password()))
                 .role(UserRole.OWNER)
                 .build();
-        appUser = appUserRepository.save(appUser);
+            appUser = appUserRepository.save(appUser);
 
         return merchantMapper.toResponse(merchant);
 

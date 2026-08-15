@@ -20,6 +20,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final MerchantContext merchantContext;
 
+    @PostMapping
     public ResponseEntity<PaymentResponse> initiate(@Valid @RequestBody PaymentInitRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(paymentService.initiate(merchantContext.getMerchantId(), request));

@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:18-alpine
-    container_name: postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${PSQL_USER}
@@ -10,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql
+      - razorpay-postgres-data:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${PSQL_USER} -d ${PSQL_DATABASE}" ]
       interval: 10s
@@ -19,12 +18,11 @@ services:
 
   redis:
       image: redis:8.10-alpine
-      container_name: redis
       restart: unless-stopped
       ports:
         - '6379:6379'
       volumes:
-        - redis-data:/data
+        - razorpay-redis-data:/data
       command: --requirepass ${REDIS_PASSWORD}
       healthcheck:
         test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
@@ -34,7 +32,6 @@ services:
 
   kafka:
       image: apache/kafka:4.0.0
-      container_name: kafka
       restart: unless-stopped
       ports:
         - "9092:9092"
@@ -53,11 +50,11 @@ services:
         KAFKA_NUM_PARTITIONS: 3
 
       volumes:
-        - kafka-data:/var/lib/kafka/data
+        - razorpay-kafka-data:/var/lib/kafka/data
 
 
 
 volumes:
-  postgres-data:
-  redis-data:
-  kafka-data:
+  razorpay-postgres-data:
+  razorpay-redis-data:
+  razorpay-kafka-data:
