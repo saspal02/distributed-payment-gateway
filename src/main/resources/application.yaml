@@ -44,9 +44,9 @@ spring:
         spring.json.value.default.type: java.util.LinkedHashMap
 
 
-threads:
-  virtual:
-    enabled: true
+  threads:
+    virtual:
+      enabled: true
 
 
 vault:

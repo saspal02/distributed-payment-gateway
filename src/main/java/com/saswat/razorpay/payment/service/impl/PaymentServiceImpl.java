@@ -181,10 +181,10 @@ public class PaymentServiceImpl implements PaymentService {
                 paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
                 payment.setCapturedAt(LocalDateTime.now());
                 orderRecord.setOrderStatus(OrderStatus.PAID);
-            } else if (captureResult instanceof PaymentResult.Failure failure) {
+            } else if (captureResult instanceof PaymentResult.Failure(String code, String description)) {
                 paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
-                payment.setErrorCode(failure.errorCode());
-                payment.setErrorDescription(failure.errorDescription());
+                payment.setErrorCode(code);
+                payment.setErrorDescription(description);
             }
             else {
                 paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);

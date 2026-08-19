@@ -29,4 +29,7 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     @Query("select p from Payment p where p.id = :paymentId")
     Optional<Payment> findByIdForUpdate(UUID paymentId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Payment p where p.merchantId = :merchantId and p.status = :paymentStatus and p.settledAt is null")
+    List<Payment> findByMerchantIdAndStatusForUpdate(UUID merchantId, PaymentStatus paymentStatus);
 }
