@@ -1,0 +1,5 @@
+com.saswat.razorpay.common_lib.audit.SharedAuditAutoConfiguration
+com.saswat.razorpay.common_lib.config.SharedKafkaAutoConfiguration
+com.saswat.razorpay.common_lib.idempotency.SharedResilienceAutoConfiguration
+com.saswat.razorpay.common_lib.exception.SharedExceptionAutoConfiguration
+com.saswat.razorpay.common_lib.util.SharedSecurityAutoConfiguration
