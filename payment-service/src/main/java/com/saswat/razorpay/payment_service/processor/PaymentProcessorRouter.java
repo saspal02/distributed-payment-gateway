@@ -1,8 +1,8 @@
 package com.saswat.razorpay.payment_service.processor;
 
 import com.saswat.razorpay.common_lib.enums.PaymentMethod;
-import com.saswat.razorpay.payment_service.processor.dto.PaymentProcessorRequest;
-import com.saswat.razorpay.payment_service.processor.dto.PaymentProcessorResponse;
+import com.saswat.razorpay.common_lib.dto.PaymentProcessorRequest;
+import com.saswat.razorpay.common_lib.dto.PaymentProcessorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

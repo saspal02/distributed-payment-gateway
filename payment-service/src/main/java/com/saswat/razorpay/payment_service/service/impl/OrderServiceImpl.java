@@ -1,11 +1,12 @@
 package com.saswat.razorpay.payment_service.service.impl;
 
+import com.saswat.razorpay.common_lib.dto.FindOrCreateCustomerRequest;
 import com.saswat.razorpay.common_lib.enums.EventAggregateType;
 import com.saswat.razorpay.common_lib.enums.OrderStatus;
 import com.saswat.razorpay.common_lib.exception.BusinessRuleViolationException;
 import com.saswat.razorpay.common_lib.exception.DuplicateResourceException;
 import com.saswat.razorpay.common_lib.exception.ResourceNotFoundException;
-import com.saswat.razorpay.merchant_service.service.CustomerService;
+import com.saswat.razorpay.payment_service.client.CustomerServiceClient;
 import com.saswat.razorpay.payment_service.dto.request.CreateOrderRequest;
 import com.saswat.razorpay.payment_service.dto.response.OrderResponse;
 import com.saswat.razorpay.payment_service.dto.response.PaymentResponse;
@@ -37,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderMapper orderMapper;
-    private final CustomerService customerService;
+    private final CustomerServiceClient customerServiceClient;
     private final OutboxEventPublisher eventPublisher;
 
     @Value("${payment.order.Default-order-expiry-minutes:30}")
@@ -53,10 +54,11 @@ public class OrderServiceImpl implements OrderService {
 
         UUID customerId = null;
         if (request.customer() != null) {
-            customerId = customerService.findOrCreate(merchantId,
-                    request.customer().email(),
-                    request.customer().name(),
-                    request.customer().phone()
+            customerId = customerServiceClient.findOrCreate(
+                    new FindOrCreateCustomerRequest(merchantId,
+                            request.customer().email(),
+                            request.customer().name(),
+                            request.customer().phone())
             );
         }
 

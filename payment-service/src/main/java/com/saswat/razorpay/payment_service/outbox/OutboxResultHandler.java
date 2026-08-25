@@ -18,7 +18,7 @@ public class OutboxResultHandler {
 
     @Transactional
     public void handleEventPublished(OutboxEvent event) {
-        event.setStatus(OutboxStatus.PUBLISHING);
+        event.setStatus(OutboxStatus.PUBLISHED);
         event.setPublishedAt(LocalDateTime.now());
         outboxEventRepository.save(event);
     }
