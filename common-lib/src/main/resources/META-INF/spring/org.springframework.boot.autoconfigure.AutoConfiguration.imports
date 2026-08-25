@@ -1,0 +1,3 @@
+com.saswat.razorpay.common_lib.config.SharedKafkaAutoConfiguration
+com.saswat.razorpay.common_lib.util.SharedSecurityAutoConfiguration
+com.saswat.razorpay.common_lib.idempotency.SharedResilienceAutoConfiguration
