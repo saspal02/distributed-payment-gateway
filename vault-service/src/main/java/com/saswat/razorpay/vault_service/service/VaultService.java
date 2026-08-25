@@ -1,7 +1,7 @@
 package com.saswat.razorpay.vault_service.service;
 
 import com.saswat.razorpay.common_lib.entity.Money;
-import com.saswat.razorpay.payment_service.processor.dto.PaymentProcessorResponse;
+import com.saswat.razorpay.common_lib.dto.PaymentProcessorResponse;
 import com.saswat.razorpay.vault_service.dto.request.TokenizeRequest;
 import com.saswat.razorpay.vault_service.dto.response.TokenizeResponse;
 
