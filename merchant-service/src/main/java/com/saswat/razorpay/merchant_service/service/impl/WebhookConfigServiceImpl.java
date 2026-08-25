@@ -8,7 +8,7 @@ import com.saswat.razorpay.merchant_service.api.MerchantLookupService;
 import com.saswat.razorpay.merchant_service.dto.request.UpdateWebhookConfigRequest;
 import com.saswat.razorpay.merchant_service.dto.response.WebhookConfigResponse;
 import com.saswat.razorpay.merchant_service.entity.Merchant;
-import com.saswat.razorpay.merchant_service.entity.MerchantWebHookConfig;
+import com.saswat.razorpay.merchant_service.entity.MerchantWebhookConfig;
 import com.saswat.razorpay.merchant_service.mapper.WebhookConfigMapper;
 import com.saswat.razorpay.merchant_service.repository.MerchantRepository;
 import com.saswat.razorpay.merchant_service.repository.WebhookConfigRepository;
@@ -45,7 +45,7 @@ public class WebhookConfigServiceImpl implements WebhookConfigService {
        String encryptedSecret = Base64.getEncoder().encodeToString
                (bytesEncryptor.encrypt(rawSecretBytes));
 
-        MerchantWebHookConfig config = MerchantWebHookConfig.builder()
+        MerchantWebhookConfig config = MerchantWebhookConfig.builder()
                 .merchant(merchant)
                 .targetUrl(request.targetUrl())
                 .enabled(true)
@@ -68,7 +68,7 @@ public class WebhookConfigServiceImpl implements WebhookConfigService {
 
     @Override
     public WebhookConfigResponse getById(UUID merchantId, UUID configId) {
-        MerchantWebHookConfig config = requireOwnedConfig(merchantId, configId);
+        MerchantWebhookConfig config = requireOwnedConfig(merchantId, configId);
         return webhookConfigMapper.toResponse(config, null);
     }
 
@@ -76,7 +76,7 @@ public class WebhookConfigServiceImpl implements WebhookConfigService {
     @Override
     @Transactional
     public WebhookConfigResponse update(UUID merchantId, UUID configId, UpdateWebhookConfigRequest request) {
-        MerchantWebHookConfig config = requireOwnedConfig(merchantId, configId);
+        MerchantWebhookConfig config = requireOwnedConfig(merchantId, configId);
         config.setTargetUrl(request.targetUrl());
         config.setEventTypes(request.eventTypes());
         log.info("Merchant webhook config updated id={} merchantId={}", config, merchantId);
@@ -86,14 +86,14 @@ public class WebhookConfigServiceImpl implements WebhookConfigService {
 
     @Override
     public void delete(UUID merchantId, UUID configId) {
-        MerchantWebHookConfig config = requireOwnedConfig(merchantId, configId);
+        MerchantWebhookConfig config = requireOwnedConfig(merchantId, configId);
         merchantWebhookConfigRepository.delete(config);
         log.info("Merchant webhook config deleted id={} merchantId={}", configId, merchantId);
 
     }
 
 
-    private MerchantWebHookConfig requireOwnedConfig(UUID merchantId, UUID configId) {
+    private MerchantWebhookConfig requireOwnedConfig(UUID merchantId, UUID configId) {
         return merchantWebhookConfigRepository.findByIdAndMerchant_Id(configId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Merchant", merchantId));
     }

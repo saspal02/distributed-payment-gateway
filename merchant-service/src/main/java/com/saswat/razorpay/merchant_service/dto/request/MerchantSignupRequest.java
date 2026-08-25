@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record MerchantSignUpRequest(
+public record MerchantSignupRequest(
 
         @NotNull(message = "Name is required")
         @Size(max = 50, message = "Name should not be more than 50 characters long")

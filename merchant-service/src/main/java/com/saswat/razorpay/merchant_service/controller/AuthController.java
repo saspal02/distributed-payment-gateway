@@ -1,7 +1,7 @@
 package com.saswat.razorpay.merchant_service.controller;
 
 import com.saswat.razorpay.merchant_service.dto.request.LoginRequest;
-import com.saswat.razorpay.merchant_service.dto.request.MerchantSignUpRequest;
+import com.saswat.razorpay.merchant_service.dto.request.MerchantSignupRequest;
 import com.saswat.razorpay.merchant_service.dto.response.LoginResponse;
 import com.saswat.razorpay.merchant_service.dto.response.MerchantResponse;
 import com.saswat.razorpay.merchant_service.service.AuthService;
@@ -19,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<MerchantResponse> signUp(@RequestBody @Valid MerchantSignUpRequest request) {
+    public ResponseEntity<MerchantResponse> signUp(@RequestBody @Valid MerchantSignupRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 authService.signUp(request)
         );

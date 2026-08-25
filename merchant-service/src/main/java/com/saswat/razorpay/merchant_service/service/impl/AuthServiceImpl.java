@@ -5,7 +5,7 @@ import com.saswat.razorpay.common_lib.enums.UserRole;
 import com.saswat.razorpay.common_lib.exception.DuplicateResourceException;
 import com.saswat.razorpay.common_lib.exception.ResourceNotFoundException;
 import com.saswat.razorpay.merchant_service.dto.request.LoginRequest;
-import com.saswat.razorpay.merchant_service.dto.request.MerchantSignUpRequest;
+import com.saswat.razorpay.merchant_service.dto.request.MerchantSignupRequest;
 import com.saswat.razorpay.merchant_service.dto.response.LoginResponse;
 import com.saswat.razorpay.merchant_service.dto.response.MerchantResponse;
 import com.saswat.razorpay.merchant_service.entity.AppUser;
@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public MerchantResponse signUp(MerchantSignUpRequest request) {
+    public MerchantResponse signUp(MerchantSignupRequest request) {
         if (merchantRepository.existsByEmail(request.email())) {
             throw new DuplicateResourceException("DUPLICATE_MERCHANT_EMAIL",
                     "Merchant with email already exists: " + request.email());
