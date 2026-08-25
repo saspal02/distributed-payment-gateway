@@ -1,21 +1,21 @@
 package com.saswat.razorpay.operations_service.settlement;
 
+import com.saswat.razorpay.common_lib.dto.PaymentSettlementView;
 import com.saswat.razorpay.common_lib.dto.SettlementBankDetails;
 import com.saswat.razorpay.common_lib.entity.Money;
 import com.saswat.razorpay.common_lib.enums.EventAggregateType;
 import com.saswat.razorpay.common_lib.enums.SettlementStatus;
 import com.saswat.razorpay.common_lib.exception.ResourceNotFoundException;
-import com.saswat.razorpay.merchant_service.api.MerchantLookupService;
+import com.saswat.razorpay.operations_service.client.MerchantServiceClient;
+import com.saswat.razorpay.operations_service.client.PaymentServiceClient;
 import com.saswat.razorpay.operations_service.entity.Settlement;
 import com.saswat.razorpay.operations_service.entity.SettlementPayment;
 import com.saswat.razorpay.operations_service.entity.SettlementPaymentId;
+import com.saswat.razorpay.operations_service.outbox.OutboxEventPublisher;
 import com.saswat.razorpay.operations_service.repository.SettlementPaymentRepository;
 import com.saswat.razorpay.operations_service.repository.SettlementRepository;
 import com.saswat.razorpay.operations_service.settlement.dto.BankTransferResult;
 import com.saswat.razorpay.operations_service.settlement.processor.BankTransferProcessor;
-import com.saswat.razorpay.payment_service.api.PaymentLookupService;
-import com.saswat.razorpay.payment_service.entity.Payment;
-import com.saswat.razorpay.payment_service.outbox.OutboxEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -36,29 +36,27 @@ public class SettlementTransactionExecutor {
     private static final double FEE_RATE = 0.02;
     private static final double GST_RATE = 0.18;
 
-    private final PaymentLookupService paymentLookupService;
     private final SettlementRepository settlementRepository;
     private final SettlementPaymentRepository settlementPaymentRepository;
-    private final MerchantLookupService merchantLookupService;
     private final BankTransferProcessor bankTransferProcessor;
-
-    // Todo: publisher inside its own db
     private final OutboxEventPublisher outboxEventPublisher;
+    private final MerchantServiceClient merchantServiceClient;
+    private final PaymentServiceClient paymentServiceClient;
 
     @Transactional
     public void processForMerchant(UUID merchantId, LocalDate settlementDate) {
-        List<Payment> unsettledPayments = paymentLookupService.findUnsettledCapturedPayments(merchantId);
-        if (unsettledPayments.isEmpty()) {
-            return;
-        }
+        List<PaymentSettlementView> unsettledPayments = paymentServiceClient.findUnsettledCaptured(merchantId);
+        if (unsettledPayments.isEmpty()) return;
 
         log.info("Processing {} unsettled payments for merchantId: {} on {} date",
                 unsettledPayments.size(), merchantId, settlementDate);
 
-        Money gross = unsettledPayments.stream()
-                .map(Payment::getAmount)
-                .reduce(Money::add)
-                .orElseThrow();
+        Integer grossAmount = unsettledPayments.stream()
+                .map(PaymentSettlementView::amountUnits)
+                .reduce(Integer::sum)
+                .orElse(0);
+
+        Money gross = Money.of(grossAmount, unsettledPayments.getFirst().currency());
 
         int fee = Math.toIntExact(Math.round(gross.getAmountUnits() * FEE_RATE));
         int gst = Math.toIntExact(Math.round(fee * GST_RATE));
@@ -77,18 +75,19 @@ public class SettlementTransactionExecutor {
 
         settlementRepository.save(settlement);
 
+
         try {
             List<SettlementPayment> links = new ArrayList<>();
-            for (Payment p : unsettledPayments) {
+            for (PaymentSettlementView p : unsettledPayments) {
                 links.add(SettlementPayment.builder()
-                        .id(new SettlementPaymentId(settlement.getId(), p.getId()))
+                        .id(new SettlementPaymentId(settlement.getId(), p.paymentId()))
                         .settlement(settlement)
                         .build());
             }
-
             settlementPaymentRepository.saveAll(links);
 
-            SettlementBankDetails settlementBankDetails = merchantLookupService.getSettlementBankDetails(merchantId);
+
+            SettlementBankDetails settlementBankDetails = merchantServiceClient.getSettlementBankDetails(merchantId);
             BankTransferResult bankTransferResult = bankTransferProcessor.initiate(settlement.getId(), merchantId, netAmount,
                     settlementBankDetails.accountNumber(), settlementBankDetails.ifsc());
 
@@ -96,18 +95,17 @@ public class SettlementTransactionExecutor {
             settlement.setBankReference(bankTransferResult.registrationRef());
 
             settlementRepository.save(settlement);
-
         } catch (Exception e) {
             log.error("Settlement failed for settlementId: {} on date: {}", settlement.getId(), settlementDate, e);
             settlement.setStatus(SettlementStatus.FAILED);
             settlementRepository.save(settlement);
         }
-
     }
 
     @Transactional
     public void resolveTransfer(UUID settlementId,
                                 String errorCode, String errorDescription) {
+
         Settlement settlement = settlementRepository.findById(settlementId).orElseThrow(
                 () -> new ResourceNotFoundException("Settlement", settlementId));
 
@@ -116,13 +114,21 @@ public class SettlementTransactionExecutor {
             return;
         }
 
-        if (errorCode != null) {
+        if (errorCode == null) { // success
             settlement.setStatus(SettlementStatus.PROCESSED);
             settlement.setProcessedAt(LocalDateTime.now());
             settlementRepository.save(settlement);
-            log.info("Settlement processed successfully, settlement id: {}", settlement.getId());
+
+            List<SettlementPayment> settlementPaymentList = settlementPaymentRepository.findBySettlement(settlement);
+            List<UUID> paymentIds = settlementPaymentList.stream()
+                    .map(SettlementPayment::getId)
+                    .map(SettlementPaymentId::getPaymentId)
+                    .toList();
+            paymentServiceClient.markSettled(paymentIds);
+
+            log.info("Settlement processed successfully, settlementId: {}", settlement.getId());
             outboxEventPublisher.publish(EventAggregateType.SETTLEMENT, settlementId,
-                    "SETTLEMENT_PROCESSED,", Map.of(
+                    "SETTLEMENT_PROCESSED", Map.of(
                             "settlementId", settlement,
                             "merchantId", settlement.getMerchantId(),
                             "status", settlement.getStatus().name(),
@@ -133,7 +139,7 @@ public class SettlementTransactionExecutor {
             settlement.setStatus(SettlementStatus.FAILED);
             settlement.setFailureReason(errorCode + " : " + errorDescription);
             settlementRepository.save(settlement);
-            log.warn("Settlement failed, settlement id: {}", settlement.getId());
+            log.warn("Settlement failed, settlementId: {}", settlement.getId());
             outboxEventPublisher.publish(EventAggregateType.SETTLEMENT, settlementId,
                     "SETTLEMENT_FAILED", Map.of(
                             "settlementId", settlement,
@@ -143,6 +149,28 @@ public class SettlementTransactionExecutor {
                             "settlementCurrency", settlement.getNetAmount().getCurrency()
                     ));
         }
+
     }
 
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

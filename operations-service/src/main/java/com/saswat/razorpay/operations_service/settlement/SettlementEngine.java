@@ -1,6 +1,6 @@
 package com.saswat.razorpay.operations_service.settlement;
 
-import com.saswat.razorpay.merchant_service.api.MerchantLookupService;
+import com.saswat.razorpay.operations_service.client.MerchantServiceClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 @RequiredArgsConstructor
 public class SettlementEngine {
 
-    private final MerchantLookupService merchantLookupService;
+    private final MerchantServiceClient merchantServiceClient;
     private final SettlementTransactionExecutor settlementTransactionExecutor;
 
     @Scheduled(cron = "0 0 23 * * *")
@@ -30,7 +30,7 @@ public class SettlementEngine {
     }
 
     public void run() {
-        List<UUID> merchantIds = merchantLookupService.listActiveMerchantIds();
+        List<UUID> merchantIds = merchantServiceClient.listActiveMerchantIds();
         log.info("Processing the settlement for {} merchantIds", merchantIds.size());
 
         try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
