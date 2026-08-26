@@ -48,9 +48,6 @@ public class MerchantWebhookConfig extends BaseEntity {
             if (trimmed.equalsIgnoreCase("ALL") || trimmed.equalsIgnoreCase(eventType)) {
                 return true;
             }
-
-            return false;
-
         }
 
         return false;

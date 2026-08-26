@@ -42,6 +42,7 @@ public class Merchant extends BaseEntity {
     @Column(length = 200)
     private String websiteUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 200, nullable = false)
     private MerchantStatus status;
 

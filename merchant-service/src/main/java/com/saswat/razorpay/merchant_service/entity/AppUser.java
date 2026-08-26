@@ -23,7 +23,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AppUser extends BaseEntity implements UserDetails {
+public class AppUser extends BaseEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,20 +43,4 @@ public class AppUser extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private UserRole role;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority("ROLE_"+role)
-        );
-    }
-
-    @Override
-    public @Nullable String getPassword() {
-        return passwordHash;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
 }
