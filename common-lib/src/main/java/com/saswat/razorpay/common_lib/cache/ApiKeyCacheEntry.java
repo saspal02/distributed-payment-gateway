@@ -1,4 +1,4 @@
-package com.saswat.razorpay.merchant_service.cache;
+package com.saswat.razorpay.common_lib.cache;
 
 import com.saswat.razorpay.common_lib.enums.Environment;
 
@@ -16,6 +16,6 @@ public record ApiKeyCacheEntry(
 ) {
 
     public boolean isInGracePeriod() {
-        return gracePeriodExpiresAt != null && LocalDateTime.now().isEqual(gracePeriodExpiresAt);
+        return gracePeriodExpiresAt != null && LocalDateTime.now().isBefore(gracePeriodExpiresAt);
     }
 }

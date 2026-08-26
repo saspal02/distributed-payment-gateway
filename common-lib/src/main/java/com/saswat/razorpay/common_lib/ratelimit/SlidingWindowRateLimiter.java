@@ -35,7 +35,7 @@ public class SlidingWindowRateLimiter implements RateLimiter{
             if ((oldest != null && !oldest.isEmpty())) {
                 Double oldestScore = oldest.iterator().next().getScore();
                 if (oldestScore != null ) {
-                    long windowExpireMs = oldestScore.longValue() + windowSeconds*100;
+                    long windowExpireMs = oldestScore.longValue() + windowSeconds*1000;
                     retryAfter = (int) Math.ceil((windowExpireMs - nowMs)/ 1000.0);
 
 

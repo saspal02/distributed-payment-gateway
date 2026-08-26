@@ -2,7 +2,6 @@ package com.saswat.razorpay.common_lib.idempotency;
 
 import com.saswat.razorpay.common_lib.context.MerchantContext;
 import com.saswat.razorpay.common_lib.exception.IdempotencyConflictException;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -65,8 +63,8 @@ public class IdempotencyFilter extends OncePerRequestFilter {
                 replay(request, response, existing.get());
             } else {
                 // it's in progress by another thread
-                var ex = new IdempotencyConflictException("IDEMPOTENCY_REQUEST_IN_PROGRESS",
-                        "A request with this idempotency key is in progress");
+                var ex = new IdempotencyConflictException("A request with this idempotency key is in progress",
+                        "IDEMPOTENCY_REQUEST_IN_PROGRESS");
                 handlerExceptionResolver.resolveException(request, response, null, ex);
             }
             return;
@@ -102,8 +100,8 @@ public class IdempotencyFilter extends OncePerRequestFilter {
     private void replay(HttpServletRequest request, HttpServletResponse response, String stored) throws IOException {
         int separatorIndex = stored.indexOf(SEPARATOR);
         if (separatorIndex < 0) {
-            var ex = new IdempotencyConflictException("IDEMPOTENCY_REQUEST_IN_PROGRESS",
-                    "A request with idempotency key is in progress");
+            var ex = new IdempotencyConflictException("A request with idempotency key is in progress",
+                    "IDEMPOTENCY_REQUEST_IN_PROGRESS");
             handlerExceptionResolver.resolveException(request, response, null, ex);
         }
 

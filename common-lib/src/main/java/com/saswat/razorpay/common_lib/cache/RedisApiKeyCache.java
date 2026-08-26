@@ -1,4 +1,4 @@
-package com.saswat.razorpay.merchant_service.cache;
+package com.saswat.razorpay.common_lib.cache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class RedisApiKeyCache implements ApiKeyCache {
     public Optional<ApiKeyCacheEntry> get(String keyId) {
         try {
             String json = stringRedisTemplate.opsForValue().get(PREFIX + keyId);
-            if (json != null) {
+            if (json == null) {
                 return Optional.empty();
             }
 
