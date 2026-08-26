@@ -154,7 +154,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void resolveAuthorization(UUID paymentId, boolean approve, String bankRef, String errorCode, String errorDescription) {
+    public void resolveAuthorization(UUID paymentId, boolean approve,
+                                     String bankRef, String errorCode, String errorDescription) {
 //        Payment payment = paymentRepository.findById(paymentId)
 //                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
 
@@ -163,6 +164,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (payment.getStatus() != PaymentStatus.AUTHORIZING) {
             log.warn("Payment is not in Authorizing state, paymentID: {}, status: {}", paymentId, payment.getStatus());
+            return;
         }
 
         OrderRecord orderRecord = payment.getOrder();
@@ -181,23 +183,44 @@ public class PaymentServiceImpl implements PaymentService {
                 paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_SUCCESS);
                 payment.setCapturedAt(LocalDateTime.now());
                 orderRecord.setOrderStatus(OrderStatus.PAID);
-            } else if (captureResult instanceof PaymentResult.Failure(String code, String description)) {
+            } else if (captureResult instanceof PaymentResult.Failure failure) {
                 paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_FAIL);
-                payment.setErrorCode(code);
-                payment.setErrorDescription(description);
-            }
-            else {
-                paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
-                payment.setErrorCode(errorCode);
-                payment.setErrorDescription(errorDescription);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorDescription(failure.errorDescription());
             }
 
             paymentRepository.save(payment);
             orderRepository.save(orderRecord);
+
+            eventPublisher.publish(EventAggregateType.PAYMENT, payment.getId(), "PAYMENT_STATUS_CHANGED",
+                    Map.of("orderId", payment.getOrder().getId().toString(),
+                            "paymentId", payment.getId().toString(),
+                            "merchantId", payment.getMerchantId().toString(),
+                            "paymentStatus", payment.getStatus().name(),
+                            "amountUnits", payment.getAmount().getAmountUnits(),
+                            "amountCurrency", payment.getAmount().getCurrency(),
+                            "paymentMethod", payment.getMethod()
+                    )
+            );
+        } else {
+            paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
+            payment.setErrorCode(errorCode);
+            payment.setErrorDescription(errorDescription);
+
+            paymentRepository.save(payment);
+            orderRepository.save(orderRecord);
+
+            eventPublisher.publish(EventAggregateType.PAYMENT, payment.getId(), "PAYMENT_STATUS_CHANGED",
+                    Map.of("orderId", payment.getOrder().getId().toString(),
+                            "paymentId", payment.getId().toString(),
+                            "merchantId", payment.getMerchantId().toString(),
+                            "paymentStatus", payment.getStatus().name(),
+                            "amountUnits", payment.getAmount().getAmountUnits(),
+                            "amountCurrency", payment.getAmount().getCurrency(),
+                            "paymentMethod", payment.getMethod()
+                    )
+            );
         }
-
-
-
     }
 
 

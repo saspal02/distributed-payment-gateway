@@ -35,7 +35,7 @@ public class WebhookDeliverExecutor {
 
     private final int MAX_ATTEMPTS = 7;
 
-    @Value("${webhook.delivery.signature-header:Razorpay-Signature}")
+    @Value("${webhook.delivery.signature-header:X-Razorpay-Signature}")
     private String signatureHeader;
 
     @Transactional
@@ -98,7 +98,7 @@ public class WebhookDeliverExecutor {
         }
 
         Duration backoff = BACKOFF.get(event.getAttempts() - 1);
-        LocalDateTime nextRetryAt = LocalDateTime.now().minus(backoff);
+        LocalDateTime nextRetryAt = LocalDateTime.now().plus(backoff);
         event.setStatus(WebhookEventStatus.FAILED);
         event.setNextRetryAt(nextRetryAt);
         webhookEventRepository.save(event);

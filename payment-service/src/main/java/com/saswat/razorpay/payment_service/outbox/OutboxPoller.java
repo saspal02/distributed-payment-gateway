@@ -54,7 +54,7 @@ public class OutboxPoller {
     }
 
     private String extractMerchantId(Map<String, Object> payload) {
-        Object value = payload.get("merchant_id");
+        Object value = payload.get("merchantId");
         return value != null ? value.toString() : "unknown";
     }
 }

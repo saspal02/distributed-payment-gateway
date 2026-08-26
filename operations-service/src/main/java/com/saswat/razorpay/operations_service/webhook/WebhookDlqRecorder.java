@@ -46,7 +46,7 @@ public class WebhookDlqRecorder {
 
         try {
             Map<String, Object> data = (Map<String, Object>) envelope.get("data");
-            Object merchantIdRaw = data != null ? data.get("merchantid") : null;
+            Object merchantIdRaw = data != null ? data.get("merchantId") : null;
             if (merchantIdRaw != null) {
                 merchantId = UUID.fromString(merchantIdRaw.toString());
             }

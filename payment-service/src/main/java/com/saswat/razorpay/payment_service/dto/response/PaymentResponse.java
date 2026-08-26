@@ -20,7 +20,6 @@ public record PaymentResponse(
         Map<String, Object> methodDetails,
         String errorCode,
         String errorDescription,
-        Long refundedAmountPaise,
         LocalDateTime capturedAt,
         LocalDateTime createdAt
 
