@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 @Configuration
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class WebSecurityConfig {
     @Bean
     public FilterRegistrationBean<Filter> idempotencyFilterRegistration() {
         FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(idempotencyFilter);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 2);
         registration.addUrlPatterns("/*");
         return registration;
     }

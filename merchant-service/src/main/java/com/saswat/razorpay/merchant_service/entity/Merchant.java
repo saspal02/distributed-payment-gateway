@@ -44,7 +44,7 @@ public class Merchant extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 200, nullable = false)
-    private MerchantStatus status;
+    private MerchantStatus status = MerchantStatus.PENDING_KYC;
 
     @Column(length = 20)
     private String gstId;

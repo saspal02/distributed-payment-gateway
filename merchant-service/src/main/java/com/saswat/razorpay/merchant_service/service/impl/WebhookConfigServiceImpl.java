@@ -1,10 +1,7 @@
 package com.saswat.razorpay.merchant_service.service.impl;
 
-import com.saswat.razorpay.common_lib.dto.SettlementBankDetails;
-import com.saswat.razorpay.common_lib.dto.WebhookTarget;
 import com.saswat.razorpay.common_lib.exception.ResourceNotFoundException;
 import com.saswat.razorpay.common_lib.util.RandomizerUtil;
-import com.saswat.razorpay.merchant_service.api.MerchantLookupService;
 import com.saswat.razorpay.merchant_service.dto.request.UpdateWebhookConfigRequest;
 import com.saswat.razorpay.merchant_service.dto.response.WebhookConfigResponse;
 import com.saswat.razorpay.merchant_service.entity.Merchant;

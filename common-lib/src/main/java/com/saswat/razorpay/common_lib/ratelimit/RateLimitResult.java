@@ -7,6 +7,6 @@ public record RateLimitResult(boolean isAllowed, int remaining, int retryAfterSe
     }
 
     public static RateLimitResult denied(int retryAfterSeconds) {
-        return new RateLimitResult(false, -1, retryAfterSeconds);
+        return new RateLimitResult(false, 0, retryAfterSeconds);
     }
 }

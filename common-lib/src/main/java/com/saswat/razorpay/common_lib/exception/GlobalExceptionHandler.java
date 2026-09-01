@@ -24,6 +24,14 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(BusinessRuleViolationException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessRuleViolation(BusinessRuleViolationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ex.getErrorCode(), ex.getMessage()));
+
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
         String errorCode = ex.getResourceName().toUpperCase() + "_NOT_FOUND";

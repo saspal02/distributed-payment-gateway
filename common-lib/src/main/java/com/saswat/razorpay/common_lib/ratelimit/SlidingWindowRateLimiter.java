@@ -20,7 +20,7 @@ public class SlidingWindowRateLimiter implements RateLimiter{
         long nowMs = System.currentTimeMillis();
         long floorMs = nowMs - windowSeconds*1000;
 
-        String redisKey = "rate-limit:sliding:"+key;
+        String redisKey = "ratelimit:sliding:"+key;
 
         var zset = redis.opsForZSet();
         zset.removeRangeByScore(redisKey, Double.NEGATIVE_INFINITY, floorMs);
