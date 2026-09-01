@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient;
 public class WebhookClientConfig {
 
     @Bean
-    public RestClient restClient() {
+    public RestClient webhookRestClient() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(3000);
         factory.setReadTimeout(5000);

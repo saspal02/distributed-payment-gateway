@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CardPaymentProcessor implements PaymentProcessor {
 
-    public static final String PAN_CARD_DECLINED = "40000000002";
-    public static final String PAN_CARD_EXPIRED = "400000000002";
+    public static final String PAN_CARD_DECLINED = "4000000000000002";
+    public static final String PAN_CARD_EXPIRED = "4000000000000069";
 
     @Override
     public PaymentProcessorResponse charge(PaymentProcessorRequest request) {
