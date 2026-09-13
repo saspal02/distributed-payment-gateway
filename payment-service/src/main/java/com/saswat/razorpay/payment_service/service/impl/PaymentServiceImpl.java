@@ -44,8 +44,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse initiate(UUID merchantId, PaymentInitRequest request) {
-        Payment payment = paymentAuthorizationRecorder.recordPayment(merchantId, request);
+    public PaymentResponse initiate(UUID merchantId, PaymentInitRequest request, String idempotencyKey) {
+
+        if (idempotencyKey != null) {
+            var existing = paymentAuthorizationRecorder.findExistingAttempt(merchantId, idempotencyKey);
+            if (existing.isPresent()) {
+                log.info("Idempotency replay for paymentId: {}", existing.get().id());
+                return existing.get();
+            }
+        }
+        Payment payment = paymentAuthorizationRecorder.recordPayment(merchantId, request, idempotencyKey);
 
         PaymentRequest paymentRequest = new PaymentRequest(payment.getId(),
                 request.orderId(), merchantId,

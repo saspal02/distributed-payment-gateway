@@ -1,5 +1,6 @@
 package com.saswat.razorpay.payment_service.repository;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.saswat.razorpay.common_lib.enums.PaymentStatus;
 import com.saswat.razorpay.payment_service.entity.OrderRecord;
 import com.saswat.razorpay.payment_service.entity.Payment;
@@ -32,4 +33,6 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Payment p where p.merchantId = :merchantId and p.status = :paymentStatus and p.settledAt is null")
     List<Payment> findByMerchantIdAndStatusForUpdate(UUID merchantId, PaymentStatus paymentStatus);
+
+    Optional<Payment> findByMerchantIdAndIdempotencyKey(UUID merchantId, String idempotencyKey);
 }
