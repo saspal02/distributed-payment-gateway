@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merchant-service
+  namespace: razorpay-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: merchant-service
+  template:
+    metadata:
+      labels:
+        app: merchant-service
+    spec:
+      containers:
+        - name: merchant-service
+          image: docker.io/saspal02/razorpay-merchant-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9010
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+            - name: WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: WEBHOOK_SECRET
+            - name: MERCHANT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MERCHANT_DB_PASSWORD
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: REDIS_PASSWORD
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 4
+              memory: 6Gi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9010
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: merchant-service
+  namespace: razorpay-core
+spec:
+  selector:
+    app: merchant-service
+  ports:
+    - port: 80
+      targetPort: 9010

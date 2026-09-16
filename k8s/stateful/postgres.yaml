@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: razorpay-core
+data:
+  init.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+      CREATE DATABASE "razorpay-merchant-db";
+      CREATE DATABASE "razorpay-payment-db";
+      CREATE DATABASE "razorpay-operations-db";
+      CREATE DATABASE "razorpay-vault-db";
+
+      CREATE USER merchant_user WITH PASSWORD '$MERCHANT_DB_PASSWORD';
+      CREATE USER payment_user WITH PASSWORD '$PAYMENT_DB_PASSWORD';
+      CREATE USER operations_user WITH PASSWORD '$OPERATIONS_DB_PASSWORD';
+      CREATE USER vault_user WITH PASSWORD '$VAULT_DB_PASSWORD';
+
+      GRANT ALL PRIVILEGES ON DATABASE "razorpay-merchant-db" TO merchant_user;
+      GRANT ALL PRIVILEGES ON DATABASE "razorpay-payment-db" TO payment_user;
+      GRANT ALL PRIVILEGES ON DATABASE "razorpay-operations-db" TO operations_user;
+      GRANT ALL PRIVILEGES ON DATABASE "razorpay-vault-db" TO vault_user;
+    EOSQL
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-merchant-db" <<-EOSQL
+      GRANT ALL ON SCHEMA public TO merchant_user;
+    EOSQL
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-payment-db" <<-EOSQL
+      GRANT ALL ON SCHEMA public TO payment_user;
+    EOSQL
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-operations-db" <<-EOSQL
+      GRANT ALL ON SCHEMA public TO operations_user;
+    EOSQL
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-vault-db" <<-EOSQL
+      GRANT ALL ON SCHEMA public TO vault_user;
+    EOSQL
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: razorpay-core
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18-alpine
+          args:
+            - "-c"
+            - "max_connections=300"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: PSQL_USER
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: PSQL_PASSWORD
+            - name: MERCHANT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MERCHANT_DB_PASSWORD
+            - name: PAYMENT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: PAYMENT_DB_PASSWORD
+            - name: OPERATIONS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: OPERATIONS_DB_PASSWORD
+            - name: VAULT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: VAULT_DB_PASSWORD
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1536Mi
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: initdb
+          configMap:
+            name: postgres-init
+            defaultMode: 0755
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: razorpay-core
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+    - port: 5432

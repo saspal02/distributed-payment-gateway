@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "merchant-service", path = "/internal/merchants")
+@FeignClient(name = "merchant-service", path = "/internal/merchants", url = "${MERCHANT_SERVICE_URI}")
 public interface MerchantServiceClient {
 
     @GetMapping("/{merchantId}/webhook-targets")

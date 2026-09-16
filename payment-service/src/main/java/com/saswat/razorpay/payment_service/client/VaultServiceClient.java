@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "vault-service", path = "/internal/vault")
+@FeignClient(name = "vault-service", path = "/internal/vault", url = "${VAULT_SERVICE_URI:}")
 public interface VaultServiceClient {
 
     @PostMapping("/charge")

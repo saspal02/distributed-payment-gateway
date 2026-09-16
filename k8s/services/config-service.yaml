@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-service
+  namespace: razorpay-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-service
+  template:
+    metadata:
+      labels:
+        app: config-service
+    spec:
+      containers:
+        - name: config-service
+          image: docker.io/saspal02/razorpay-config-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8888
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: GITHUB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GITHUB_USERNAME
+            - name: CONFIG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: CONFIG_PASSWORD
+            - name: GITHUB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GITHUB_URI
+            - name: GIT_CONFIG_REPO
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GITHUB_URI
+            - name: GIT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GITHUB_USERNAME
+            - name: GIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: CONFIG_PASSWORD
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8888
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-service
+  namespace: razorpay-core
+spec:
+  selector:
+    app: config-service
+  ports:
+    - port: 8888
+      targetPort: 8888

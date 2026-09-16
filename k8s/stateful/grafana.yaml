@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: razorpay-core
+data:
+  datasource.yml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.razorpay-core.svc.cluster.local:9090
+        isDefault: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-providers
+  namespace: razorpay-core
+data:
+  dashboards.yml: |
+    apiVersion: 1
+
+    providers:
+      - name: razorpay-dashboards
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 30
+        options:
+          path: /etc/grafana/provisioning/dashboards
+  service-resources.json: |
+    {
+      "title": "Service CPU & Memory",
+      "uid": "service-resources",
+      "schemaVersion": 39,
+      "version": 1,
+      "editable": true,
+      "refresh": "10s",
+      "time": { "from": "now-30m", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "CPU Usage by Service (%)",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+          "fieldConfig": {
+            "defaults": { "unit": "percent", "min": 0 },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "Prometheus" },
+              "expr": "process_cpu_usage{job=~\"api-gateway-service|merchant-service|payment-service|operations-service|vault-service\"} * 100",
+              "legendFormat": "{{job}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "JVM Memory Used by Service",
+          "type": "timeseries",
+          "datasource": { "type": "prometheus", "uid": "Prometheus" },
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 10 },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes", "min": 0 },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "Prometheus" },
+              "expr": "sum by (job) (jvm_memory_used_bytes{job=~\"api-gateway-service|merchant-service|payment-service|operations-service|vault-service\"})",
+              "legendFormat": "{{job}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    }
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: razorpay-core
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  serviceName: grafana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: admin
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GRAFANA_ADMIN_PASSWORD
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Admin
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboard-providers
+              mountPath: /etc/grafana/provisioning/dashboards
+      volumes:
+        - name: datasources
+          configMap:
+            name: grafana-datasources
+        - name: dashboard-providers
+          configMap:
+            name: grafana-dashboard-providers
+  volumeClaimTemplates:
+    - metadata:
+        name: grafana-data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: razorpay-core
+spec:
+  clusterIP: None
+  selector:
+    app: grafana
+  ports:
+    - port: 3000

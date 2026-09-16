@@ -34,6 +34,7 @@ build/
 
 ### env files ###
 .env
+k8s/k8s-secrets.env
 
 ### skills.json ###
 skills-lock.json

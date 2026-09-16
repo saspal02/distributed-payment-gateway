@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: razorpay-core
+data:
+  SPRING_PROFILES_ACTIVE: "k8s"
+  CONFIG_SERVER_URL: "http://config-service.razorpay-core.svc.cluster.local:8888"
+  SPRING_CLOUD_CONFIG_FAIL_FAST: "false"
+  SPRING_CLOUD_CONFIG_RETRY_MAX_ATTEMPTS: "10"
+  SPRING_CLOUD_CONFIG_RETRY_INITIAL_INTERVAL: "3000"

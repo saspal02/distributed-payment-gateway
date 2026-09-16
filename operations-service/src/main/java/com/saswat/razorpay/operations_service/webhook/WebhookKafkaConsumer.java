@@ -34,10 +34,10 @@ public class WebhookKafkaConsumer {
     private final WebhookDlqRecorder dlqRecorder;
 
     @KafkaListener(topics = {
-            "${app.kafka.topics.payments:payments.events}",
-            "${app.kafka.topics.orders:orders.events}",
-            "${app.kafka.topics.refunds:refunds.events}",
-            "${app.kafka.topics.settlements:settlements.events}"
+            "${app.kafka.topics.payment:payments.events}",
+            "${app.kafka.topics.order:orders.events}",
+            "${app.kafka.topics.refund:refund.events}",
+            "${app.kafka.topics.settlement:settlement.events}"
     })
     public void onWebhookEvent(ConsumerRecord<String, Map<String, Object>> record, Acknowledgment ack) {
         try {

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operations-service
+  namespace: razorpay-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: operations-service
+  template:
+    metadata:
+      labels:
+        app: operations-service
+    spec:
+      containers:
+        - name: operations-service
+          image: docker.io/saspal02/razorpay-operations-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9030
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: OPERATIONS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: OPERATIONS_DB_PASSWORD
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: REDIS_PASSWORD
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 2Gi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9030
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: operations-service
+  namespace: razorpay-core
+spec:
+  selector:
+    app: operations-service
+  ports:
+    - port: 80
+      targetPort: 9030

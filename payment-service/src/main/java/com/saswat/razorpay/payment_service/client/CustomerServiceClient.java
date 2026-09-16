@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
-@FeignClient(name = "merchant-service", path = "/internal/customers")
+@FeignClient(name = "merchant-service", path = "/internal/customers", url = "${MERCHANT_SERVICE_URI:}")
 public interface CustomerServiceClient {
 
     @PostMapping("/find-or-create")

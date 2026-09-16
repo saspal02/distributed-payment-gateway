@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zipkin
+  namespace: razorpay-core
+spec:
+  selector:
+    matchLabels:
+      app: zipkin
+  serviceName: zipkin
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+        - name: zipkin
+          image: openzipkin/zipkin:latest
+          ports:
+            - containerPort: 9411
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  namespace: razorpay-core
+spec:
+  clusterIP: None
+  selector:
+    app: zipkin
+  ports:
+    - port: 9411
