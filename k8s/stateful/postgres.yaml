@@ -8,7 +8,7 @@ data:
     #!/bin/bash
     set -e
 
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
       CREATE DATABASE "razorpay-merchant-db";
       CREATE DATABASE "razorpay-payment-db";
       CREATE DATABASE "razorpay-operations-db";
@@ -75,7 +75,7 @@ spec:
                   name: app-secrets
                   key: PSQL_USER
             - name: POSTGRES_DB
-              value: postgres
+              value: razorpay
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
