@@ -75,7 +75,7 @@ spec:
                   name: app-secrets
                   key: PSQL_USER
             - name: POSTGRES_DB
-              value: razorpay
+              value: postgres
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
