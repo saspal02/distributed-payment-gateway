@@ -118,4 +118,11 @@ public class OrderServiceImpl implements OrderService {
 
         return paymentMapper.toResponseList(paymentList);
     }
+
+    @Override
+    public List<OrderResponse> listByMerchant(UUID merchantId) {
+        final List<OrderRecord> orders = orderRepository.findByMerchantIdOrderByCreatedAtDesc(merchantId);
+
+        return orderMapper.toResponseList(orders);
+    }
 }
