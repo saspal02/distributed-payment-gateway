@@ -110,11 +110,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<PaymentResponse> listPayments(UUID merchantId, UUID orderId) {
+    public List<PaymentResponse> listPayments(final UUID merchantId, final UUID orderId) {
         OrderRecord order = orderRepository.findByIdAndMerchantId(orderId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
 
-        List<Payment> paymentList = paymentRepository.findByOrder_Id(order);
+        List<Payment> paymentList = paymentRepository.findByOrder_Id(order.getId());
 
         return paymentMapper.toResponseList(paymentList);
     }

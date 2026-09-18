@@ -13,6 +13,8 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<OrderRecord, UUID> {
     boolean existsByMerchantIdAndReceipt(UUID merchantId, String receipt);
 
+    boolean existsByIdAndMerchantId(final UUID orderId, final UUID merchantId);
+
     Optional<OrderRecord> findByIdAndMerchantId(UUID orderId, UUID merchantId);
 
     List<OrderRecord> findByMerchantIdOrderByCreatedAtDesc(UUID merchantId);

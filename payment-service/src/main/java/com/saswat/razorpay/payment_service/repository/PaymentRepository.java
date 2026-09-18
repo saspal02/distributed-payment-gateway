@@ -14,9 +14,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
-    List<Payment> findByOrder_Id(OrderRecord order);
 
     Optional<Payment> findByIdAndMerchantId(UUID paymentId, UUID merchantId);
+
+    List<Payment> findByOrder_Id(UUID orderId);
 
     List<Payment> findByStatusAndCreatedAtBefore(PaymentStatus paymentStatus, LocalDateTime globalWindow);
 
@@ -33,4 +34,7 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByMerchantIdAndStatusForUpdate(UUID merchantId, PaymentStatus paymentStatus);
 
     Optional<Payment> findByMerchantIdAndIdempotencyKey(UUID merchantId, String idempotencyKey);
+
+
+
 }
