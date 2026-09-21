@@ -22,13 +22,29 @@ public class GatewayDocsRoutesConfig {
             @Value("${PAYMENT_SERVICE_URI:http://payment-service}") final String paymentUri,
             @Value("${VAULT_SERVICE_URI:http://vault-service}") final String vaultUri,
             @Value("${OPERATIONS_SERVICE_URI:http://operations-service}") final String operationsUri) {
-        return route("merchant-service-docs").GET("/merchant-service/v3/api-docs", http())
-                .before(uri(merchantUri)).before(stripPrefix(STRIP_PREFIX_SEGMENTS)).build()
-                .and(route("payment-service-docs").GET("/payment-service/v3/api-docs", http())
-                        .before(uri(paymentUri)).before(stripPrefix(STRIP_PREFIX_SEGMENTS)).build())
-                .and(route("vault-service-docs").GET("/vault-service/v3/api-docs", http())
-                        .before(uri(vaultUri)).before(stripPrefix(STRIP_PREFIX_SEGMENTS)).build())
-                .and(route("operations-service-docs").GET("/operations-service/v3/api-docs", http())
-                        .before(uri(operationsUri)).before(stripPrefix(STRIP_PREFIX_SEGMENTS)).build());
+
+        return route("merchant-service-docs")
+                .GET("/merchant-service/v3/api-docs", http())
+                .before(uri(merchantUri))
+                .before(stripPrefix(STRIP_PREFIX_SEGMENTS))
+                .build()
+
+                .and(route("payment-service-docs")
+                        .GET("/payment-service/v3/api-docs", http())
+                        .before(uri(paymentUri))
+                        .before(stripPrefix(STRIP_PREFIX_SEGMENTS))
+                        .build())
+
+                .and(route("vault-service-docs")
+                        .GET("/vault-service/v3/api-docs", http())
+                        .before(uri(vaultUri))
+                        .before(stripPrefix(STRIP_PREFIX_SEGMENTS))
+                        .build())
+
+                .and(route("operations-service-docs")
+                        .GET("/operations-service/v3/api-docs", http())
+                        .before(uri(operationsUri))
+                        .before(stripPrefix(STRIP_PREFIX_SEGMENTS))
+                        .build());
     }
 }
