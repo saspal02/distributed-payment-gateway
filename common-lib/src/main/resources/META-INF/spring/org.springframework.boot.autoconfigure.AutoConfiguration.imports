@@ -1,8 +1,8 @@
-com.saswat.razorpay.common_lib.util.SharedSecurityAutoConfiguration
-com.saswat.razorpay.common_lib.config.SharedKafkaAutoConfiguration
-com.saswat.razorpay.common_lib.web.SharedWebFilterAutoConfiguration
-com.saswat.razorpay.common_lib.idempotency.SharedResilienceAutoConfiguration
-com.saswat.razorpay.common_lib.audit.SharedAuditAutoConfiguration
-com.saswat.razorpay.common_lib.exception.SharedExceptionAutoConfiguration
-com.saswat.razorpay.common_lib.config.ZipkinConfig
-com.saswat.razorpay.common_lib.openapi.SharedOpenApiAutoConfiguration
+com.saswat.paygrid.common_lib.util.SharedSecurityAutoConfiguration
+com.saswat.paygrid.common_lib.config.SharedKafkaAutoConfiguration
+com.saswat.paygrid.common_lib.web.SharedWebFilterAutoConfiguration
+com.saswat.paygrid.common_lib.idempotency.SharedResilienceAutoConfiguration
+com.saswat.paygrid.common_lib.audit.SharedAuditAutoConfiguration
+com.saswat.paygrid.common_lib.exception.SharedExceptionAutoConfiguration
+com.saswat.paygrid.common_lib.config.ZipkinConfig
+com.saswat.paygrid.common_lib.openapi.SharedOpenApiAutoConfiguration
