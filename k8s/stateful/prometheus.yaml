@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
-  namespace: razorpay-core
+  namespace: paygrid-core
 data:
   prometheus.yml: |
     global:
@@ -39,7 +39,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: prometheus
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   selector:
     matchLabels:
@@ -88,7 +88,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   clusterIP: None
   selector:

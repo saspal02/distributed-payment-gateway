@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: kafka
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   selector:
     matchLabels:
@@ -41,7 +41,7 @@ spec:
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
             - name: KAFKA_CONTROLLER_QUORUM_VOTERS
-              value: "1@kafka-0.kafka.razorpay-core.svc.cluster.local:29093"
+              value: "1@kafka-0.kafka.paygrid-core.svc.cluster.local:29093"
             - name: KAFKA_LISTENERS
               value: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093"
             - name: KAFKA_ADVERTISED_LISTENERS
@@ -84,7 +84,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   clusterIP: None
   selector:

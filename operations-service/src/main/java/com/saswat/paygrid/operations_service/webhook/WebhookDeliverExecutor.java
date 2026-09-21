@@ -35,7 +35,7 @@ public class WebhookDeliverExecutor {
 
     private final int MAX_ATTEMPTS = 7;
 
-    @Value("${webhook.delivery.signature-header:X-Razorpay-Signature}")
+    @Value("${webhook.delivery.signature-header:X-PayGrid-Signature}")
     private String signatureHeader;
 
     @Transactional

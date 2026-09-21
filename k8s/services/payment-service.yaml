@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-service
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: docker.io/saspal02/razorpay-payment-service:latest
+          image: docker.io/saspal02/paygrid-payment-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 9020
@@ -53,7 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: payment-service
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   selector:
     app: payment-service

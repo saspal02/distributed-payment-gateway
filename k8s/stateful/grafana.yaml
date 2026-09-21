@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
-  namespace: razorpay-core
+  namespace: paygrid-core
 data:
   datasource.yml: |
     apiVersion: 1
@@ -11,7 +11,7 @@ data:
       - name: Prometheus
         type: prometheus
         access: proxy
-        url: http://prometheus.razorpay-core.svc.cluster.local:9090
+        url: http://prometheus.paygrid-core.svc.cluster.local:9090
         isDefault: true
 
 ---
@@ -19,13 +19,13 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-dashboard-providers
-  namespace: razorpay-core
+  namespace: paygrid-core
 data:
   dashboards.yml: |
     apiVersion: 1
 
     providers:
-      - name: razorpay-dashboards
+      - name: paygrid-dashboards
         orgId: 1
         folder: ""
         type: file
@@ -89,7 +89,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: grafana
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   selector:
     matchLabels:
@@ -155,7 +155,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: grafana
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   clusterIP: None
   selector:

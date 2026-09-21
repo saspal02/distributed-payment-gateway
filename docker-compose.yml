@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - razorpay-postgres-data:/var/lib/postgresql
+      - paygrid-postgres-data:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${PSQL_USER}" ]
       interval: 10s
@@ -21,7 +21,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - razorpay-redis-data:/data
+      - paygrid-redis-data:/data
     command: --requirepass ${REDIS_PASSWORD}
     healthcheck:
       test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
@@ -49,9 +49,9 @@ services:
       KAFKA_NUM_PARTITIONS: 3
 
     volumes:
-      - razorpay-kafka-data:/var/lib/kafka/data
+      - paygrid-kafka-data:/var/lib/kafka/data
 
 volumes:
-  razorpay-postgres-data:
-  razorpay-redis-data:
-  razorpay-kafka-data:
+  paygrid-postgres-data:
+  paygrid-redis-data:
+  paygrid-kafka-data:

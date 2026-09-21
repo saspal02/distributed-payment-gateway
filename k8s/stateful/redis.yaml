@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   selector:
     matchLabels:
@@ -53,7 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   clusterIP: None
   selector:

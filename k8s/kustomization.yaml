@@ -20,7 +20,7 @@ resources:
 
 secretGenerator:
   - name: app-secrets
-    namespace: razorpay-core
+    namespace: paygrid-core
     envs:
       - k8s-secrets.env
 

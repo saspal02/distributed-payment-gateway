@@ -2,42 +2,42 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-init
-  namespace: razorpay-core
+  namespace: paygrid-core
 data:
   init.sh: |
     #!/bin/bash
     set -e
 
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-      CREATE DATABASE "razorpay-merchant-db";
-      CREATE DATABASE "razorpay-payment-db";
-      CREATE DATABASE "razorpay-operations-db";
-      CREATE DATABASE "razorpay-vault-db";
+      CREATE DATABASE "paygrid-merchant-db";
+      CREATE DATABASE "paygrid-payment-db";
+      CREATE DATABASE "paygrid-operations-db";
+      CREATE DATABASE "paygrid-vault-db";
 
       CREATE USER merchant_user WITH PASSWORD '$MERCHANT_DB_PASSWORD';
       CREATE USER payment_user WITH PASSWORD '$PAYMENT_DB_PASSWORD';
       CREATE USER operations_user WITH PASSWORD '$OPERATIONS_DB_PASSWORD';
       CREATE USER vault_user WITH PASSWORD '$VAULT_DB_PASSWORD';
 
-      GRANT ALL PRIVILEGES ON DATABASE "razorpay-merchant-db" TO merchant_user;
-      GRANT ALL PRIVILEGES ON DATABASE "razorpay-payment-db" TO payment_user;
-      GRANT ALL PRIVILEGES ON DATABASE "razorpay-operations-db" TO operations_user;
-      GRANT ALL PRIVILEGES ON DATABASE "razorpay-vault-db" TO vault_user;
+      GRANT ALL PRIVILEGES ON DATABASE "paygrid-merchant-db" TO merchant_user;
+      GRANT ALL PRIVILEGES ON DATABASE "paygrid-payment-db" TO payment_user;
+      GRANT ALL PRIVILEGES ON DATABASE "paygrid-operations-db" TO operations_user;
+      GRANT ALL PRIVILEGES ON DATABASE "paygrid-vault-db" TO vault_user;
     EOSQL
 
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-merchant-db" <<-EOSQL
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "paygrid-merchant-db" <<-EOSQL
       GRANT ALL ON SCHEMA public TO merchant_user;
     EOSQL
 
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-payment-db" <<-EOSQL
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "paygrid-payment-db" <<-EOSQL
       GRANT ALL ON SCHEMA public TO payment_user;
     EOSQL
 
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-operations-db" <<-EOSQL
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "paygrid-operations-db" <<-EOSQL
       GRANT ALL ON SCHEMA public TO operations_user;
     EOSQL
 
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "razorpay-vault-db" <<-EOSQL
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "paygrid-vault-db" <<-EOSQL
       GRANT ALL ON SCHEMA public TO vault_user;
     EOSQL
 
@@ -46,7 +46,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   selector:
     matchLabels:
@@ -132,7 +132,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: razorpay-core
+  namespace: paygrid-core
 spec:
   clusterIP: None
   selector:

@@ -1,7 +1,7 @@
 apiVersion: 1
 
 providers:
-  - name: razorpay-dashboards
+  - name: paygrid-dashboards
     orgId: 1
     folder: ""
     type: file
