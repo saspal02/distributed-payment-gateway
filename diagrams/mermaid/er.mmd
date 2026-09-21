@@ -1,0 +1,209 @@
+erDiagram
+	direction TB
+	MERCHANT {
+		UUID id PK ""
+		string name ""
+		string email UK ""
+		string contact_number ""
+		string business_type ""
+		string business_name ""
+		string website_url ""
+		string status ""
+		string gst_id ""
+		string pan_id ""
+		string settlement_bank_account ""
+		string settlement_bank_ifsc ""
+		string settlement_bank_account_holder_name ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	APP_USER {
+		UUID id PK ""
+		UUID merchant_id FK ""
+		string email UK ""
+		string password_hash ""
+		string role ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	API_KEY {
+		UUID id PK ""
+		UUID merchant_id FK ""
+		string key_id UK ""
+		string key_secret_hash ""
+		string previous_key_secret_hash ""
+		string environment ""
+		boolean enabled ""
+		datetime last_used_at ""
+		datetime created_at ""
+		datetime rotated_at ""
+		datetime grace_period_expires_at ""
+	}
+
+	CUSTOMER {
+		UUID id PK ""
+		UUID merchant_id FK ""
+		string name ""
+		string email ""
+		string phone ""
+		datetime deleted_at ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	MERCHANT_WEBHOOK_CONFIG {
+		UUID id PK ""
+		UUID merchant_id FK ""
+		string target_url ""
+		string webhook_secret ""
+		boolean enabled ""
+		string event_types ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	ORDER_RECORD {
+		UUID id PK ""
+		UUID merchant_id ""
+		UUID customer_id ""
+		long amount_paise ""
+		string receipt ""
+		string status ""
+		int attempts ""
+		jsonb notes ""
+		datetime expires_at ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	PAYMENT {
+		UUID id PK ""
+		UUID order_id FK ""
+		UUID merchant_id ""
+		string idempotency_key ""
+		long amount_paise ""
+		string status ""
+		string method ""
+		jsonb method_details ""
+		string bank_reference ""
+		string processor_reference ""
+		string error_code ""
+		string error_description ""
+		datetime authorized_at ""
+		datetime captured_at ""
+		datetime failed_at ""
+		datetime refunded_at ""
+		datetime settled_at ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	REFUND {
+		UUID id PK ""
+		UUID payment_id FK ""
+		UUID merchant_id ""
+		long amount_paise ""
+		string status ""
+		string bank_reference ""
+		string error_code ""
+		string error_description ""
+		jsonb notes ""
+		datetime processed_at ""
+		datetime created_at ""
+	}
+
+	PAYMENT_TRANSITION_LOG {
+		UUID id PK ""
+		UUID payment_id FK ""
+		string from_status ""
+		string event ""
+		string to_status ""
+		string actor ""
+		datetime occurred_at ""
+	}
+
+	VAULT_CARD {
+		UUID id PK ""
+		bytes encrypted_pan ""
+		bytes encrypted_dek ""
+		string last_four ""
+		string brand ""
+		string bin ""
+		string expiry_month ""
+		string expiry_year ""
+		string card_holder_name ""
+		datetime deleted_at ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	CARD_TOKEN {
+		UUID id PK ""
+		string token UK ""
+		UUID vault_card_id FK ""
+		UUID customer_id ""
+		UUID merchant_id ""
+		datetime revoked_at ""
+		datetime created_at ""
+		datetime updated_at ""
+	}
+
+	WEBHOOK_EVENT {
+		UUID id PK ""
+		UUID merchant_id ""
+		string event_type ""
+		jsonb payload ""
+		string target_url ""
+		string signature ""
+		string status ""
+		int attempts ""
+		int last_response_code ""
+		string last_response_body ""
+		datetime next_retry_at ""
+		datetime last_attempt_at ""
+		datetime created_at ""
+		datetime delivered_at ""
+	}
+
+	DLQ_EVENT {
+		UUID id PK ""
+		UUID webhook_event_id FK ""
+		UUID merchant_id ""
+		jsonb payload ""
+		string final_error ""
+		datetime moved_at ""
+		datetime replayed_at ""
+	}
+
+	SETTLEMENT {
+		UUID id PK ""
+		UUID merchant_id ""
+		long gross_amount_paise ""
+		long refund_amount_paise ""
+		long fee_amount_paise ""
+		long gst_amount_paise ""
+		long net_amount_paise ""
+		string status ""
+		string bank_reference ""
+		string failure_reason ""
+		datetime processed_at ""
+		datetime created_at ""
+	}
+
+	SETTLEMENT_PAYMENT {
+		UUID settlement_id PK,FK ""
+		UUID payment_id PK ""
+	}
+
+	MERCHANT||--|{APP_USER:"has"
+	MERCHANT||--o{API_KEY:"has"
+	MERCHANT||--o{CUSTOMER:"has"
+	MERCHANT||--|{MERCHANT_WEBHOOK_CONFIG:"configures"
+	ORDER_RECORD||--o{PAYMENT:"has"
+	PAYMENT||--o{REFUND:"has"
+	PAYMENT||--o{PAYMENT_TRANSITION_LOG:"logged by"
+	VAULT_CARD||--o{CARD_TOKEN:"tokenize"
+	SETTLEMENT||--o{SETTLEMENT_PAYMENT:"includes"
+	WEBHOOK_EVENT||--o|DLQ_EVENT:"dead-lettered"

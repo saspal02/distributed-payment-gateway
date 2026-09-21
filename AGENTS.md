@@ -10,7 +10,6 @@
 - Use UTF-8 encoding.
 - Use descriptive names for classes, methods, and variables.
 - Avoid `var` keyword, prefer explicit types.
-- All method parameters should be `final`.
 - All variables should be declared as `final` where possible.
 - Preference for immutability:
 - Avoid mutations of objects, specially when using for-each loops or Stream API using `forEach()`.
