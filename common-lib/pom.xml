@@ -8,7 +8,7 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.saswat.razorpay</groupId>
+	<groupId>com.saswat.paygrid</groupId>
 	<artifactId>common-lib</artifactId>
 	<version>1.0.0</version>
 	<name/>

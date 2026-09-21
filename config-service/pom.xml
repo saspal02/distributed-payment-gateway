@@ -8,7 +8,7 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.codingshuttle.razorpay</groupId>
+	<groupId>com.saswat.paygrid</groupId>
 	<artifactId>config-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
@@ -74,7 +74,7 @@
 				<version>3.5.2</version>
 				<configuration>
 					<to>
-						<image>docker.io/saspal02/razorpay-${project.artifactId}:${project.version}</image>
+						<image>docker.io/saspal02/paygrid-${project.artifactId}:${project.version}</image>
 						<tags>
 							<tag>latest</tag>
 						</tags>
