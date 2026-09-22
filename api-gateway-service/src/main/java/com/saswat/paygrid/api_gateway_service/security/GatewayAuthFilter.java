@@ -27,13 +27,8 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String BASIC_PREFIX = "Basic ";
-    private static final String[] SKIPPED_PREFIXES = {
-            "/v3/api-docs",
-            "/swagger-ui",
-            "/swagger-resources",
-            "/webjars/"
-    };
     private static final String API_DOCS_PATH = "/v3/api-docs";
+    private static final String SWAGGER_UI_PREFIX = "/swagger-ui";
     private static final String SWAGGER_UI_HTML = "/swagger-ui.html";
 
     private final JwtAuthHandler jwtAuthHandler;
@@ -45,9 +40,16 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         final String path = request.getRequestURI();
-        final boolean isSkippedPrefix = isSkippedPrefix(path);
-        final boolean isSwaggerUi = SWAGGER_UI_HTML.equals(path);
-        return isSkippedPrefix || isSwaggerUi;
+        if (path == null || path.isBlank()) {
+            return false;
+        }
+        if (path.contains(API_DOCS_PATH)) {
+            return true;
+        }
+        if (path.startsWith(SWAGGER_UI_PREFIX)) {
+            return true;
+        }
+        return SWAGGER_UI_HTML.equals(path);
     }
 
     @Override
@@ -95,17 +97,5 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getWriter(), Map.of("errorCode", errorCode, "errorDescription", message));
-    }
-
-    private boolean isSkippedPrefix(final String path) {
-        if (path == null || path.isBlank()) {
-            return false;
-        }
-        for (final String prefix : SKIPPED_PREFIXES) {
-            if (path.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return path.contains(API_DOCS_PATH);
     }
 }
